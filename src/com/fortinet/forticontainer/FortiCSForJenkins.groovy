@@ -157,6 +157,7 @@ class FortiCSForJenkins {
             }
             return result;
         } catch(err) {
+            echo err
 
         }finally {
 
