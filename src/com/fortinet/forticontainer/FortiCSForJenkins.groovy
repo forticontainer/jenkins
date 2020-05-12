@@ -157,7 +157,7 @@ class FortiCSForJenkins {
             }
             return result;
         } catch(err) {
-            prnitln(err)
+            println(err)
 
         }finally {
 
