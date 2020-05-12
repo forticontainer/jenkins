@@ -21,7 +21,7 @@ class FortiCSForJenkins {
     String imageName
 
     FortiCSForJenkins(ctrlHost,ctrlToken,jenkinsHost,projectName,buildNumber){
-        echo "test";
+        pringln( "test");
         this.ctrlHost = ctrlHost;
         this.controllerToken = ctrlToken;
         this.jenkinsHost = jenkinsHost;
@@ -38,7 +38,7 @@ class FortiCSForJenkins {
 
     def String addJob() {
         def desc = sh("""docker images""")
-        echo "${desc}"
+        pringln(desc);
         def jsonBody = ["jobName" : "${projectName}",
                         "jobHost": "${jenkinsHost}",
                         "buildNumber": "${buildNumber}"]
@@ -92,7 +92,7 @@ class FortiCSForJenkins {
         def postRC = post.getResponseCode();
         if(postRC.equals(200)) {
             //do something here
-            echo "success update jenkins"
+            println("success update jenkins");
             return true;
         }else{
             return false;
@@ -103,7 +103,7 @@ class FortiCSForJenkins {
     def int checkResult(String jobId) {
         int result=0;
         int status=0;
-        echo "Start check";
+        println("Start check");
         def statusResponse = sh(returnStdout: true, script: """
               curl --location --request GET '${ctrlHost}/api/v1/jenkins/job/${jobId}' \
                   --header 'x-controller-token: ${controllerToken}'
@@ -123,9 +123,9 @@ class FortiCSForJenkins {
     }
 
     def int imageScan(){
-        echo "jenkins hot : " + jenkinsHost
-        echo "project name : " + projectName
-        echo "build number : " + buildNumber
+        println( "jenkins hot : " + jenkinsHost);
+        println( "project name : " + projectName);
+                println( "build number : " + buildNumber);
 
         try {
             jobId=addJob(ctrlHost, controllerToken, projectName, jenkinsHost, buildNumber);
@@ -134,20 +134,19 @@ class FortiCSForJenkins {
                 return 20; //todo add job fail
             }
 
-            echo "2.1 save docker image"
-            echo "${jobId}"
+            println( "2.1 save docker image "+jobId);
 //            for(String image:images){
 //                uploadImage(jobId,image);
 //            }
             uploadImage(jobId,imageName);
             boolean status=updateJobStatus(jobId,10);
             if(status!=true){
-                echo "fail"
+                println( "fail");
                 currentBuild.result = 'FAILURE'
                 return 10; //todo update status fail
             }else{
-                echo "testing"
-                echo "success update jenkins job status"
+                println( "testing");
+                println( "success update jenkins job status");
             }
             int result = 0;
             timeout(time: 30, unit: 'MINUTES') {
