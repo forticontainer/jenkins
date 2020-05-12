@@ -1,6 +1,9 @@
 package com.fortinet.forticontainer
 
 import groovy.json.JsonBuilder
+
+import java.util.concurrent.TimeUnit
+
 /**
  *     def jenkinsHost = "${env.JOB_URL}";
  *     def projectName = "${env.JOB_NAME}";
@@ -37,8 +40,8 @@ class FortiCSForJenkins {
 
 
     def String addJob() {
-        def desc = sh("""docker images""")
-        println(desc);
+        def desc = "docker images".execute();
+        println(desc.text);
         def jsonBody = ["jobName" : "${projectName}",
                         "jobHost": "${jenkinsHost}",
                         "buildNumber": "${buildNumber}"]
@@ -64,15 +67,22 @@ class FortiCSForJenkins {
     }
 
     def Boolean uploadImage(String jobId,String imageName) {
-        sh("""docker save ${imageName} -o /tmp/tmp_image.tar """)
-        sh("""ls -lh /tmp/tmp*""")
-        sh("""curl --location --request POST '${ctrlHost}/api/v1/jenkins/image/${jobId}' \
-                 -H 'Content-Type: multipart/form-data' \
-                 -H 'x-controller-token: ${controllerToken}' \
-                 -H 'imageName: ' \
-                 --form 'file=@/tmp/tmp_image.tar'   
-             """).trim()
-        sh("""rm -rf /tmp/tmp_image.tar""")
+        def save="docker save ${imageName} -o /tmp/tmp_image.tar ".execute();
+        save.waitFor();
+        println save.text;
+        def lsResult = "ls -lh /tmp/".execute();
+        println(lsResult.text);
+
+        def imageFile = new File("/tmp/tmp_image.tar");
+        if(!imageFile.exists()){
+            return false;
+        }
+
+        def cmd = "curl --location --request POST '${ctrlHost}/api/v1/jenkins/image/${jobId}'  -H 'Content-Type: multipart/form-data'  -H 'x-controller-token: ${controllerToken}' -H 'imageName: ${imageName}' --form 'file=@/tmp/tmp_image.tar'";
+        println cmd;
+        def proc= cmd.execute();
+        proc.waitFor();
+        "rm -rf /tmp/tmp_image.tar".execute()
         return true;
     }
 
@@ -104,63 +114,92 @@ class FortiCSForJenkins {
         int result=0;
         int status=0;
         println("Start check");
-        def statusResponse = sh(returnStdout: true, script: """
-              curl --location --request GET '${ctrlHost}/api/v1/jenkins/job/${jobId}' \
-                  --header 'x-controller-token: ${controllerToken}'
-          """).trim();
 
-        def jsonMap = new groovy.json.JsonSlurper().parseText(statusResponse);
-        result = jsonMap['result'];
-        status = jsonMap['status'];
-        print("the result is ${result}, the status is ${status}");
-
-        if(status<20){
-            return 0
-        }else{
-            return result
+        def get = new URL("${ctrlHost}/api/v1/jenkins/job/${jobId}").openConnection();
+        def builder = new JsonBuilder()
+        get.setRequestMethod("GET")
+        get.setDoOutput(true)
+        get.setRequestProperty("Content-Type", "application/json")
+        get.setRequestProperty("x-controller-token", "${controllerToken}")
+        def getRC = get.getResponseCode();
+        if(getRC.equals(200)) {
+            def jsonMap = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText());
+            result = jsonMap['result'];
+            status = jsonMap['status'];
+            println("the result is ${result}, the status is ${status}");
+            /**
+             *  UNDONE(0),
+             *  FAIL(1),
+             *  PASS(5),
+             *     CANCEL(10);
+             */
+            if(status<20){
+                return 0;
+            }
         }
-
+        return result;
     }
 
-    def int imageScan(){
+    def boolean imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);
         println( "build number : " + buildNumber);
-
+        int result = 0;
         try {
             def jobId=addJob();
             if(jobId==""){
-                echo "add job fail";
-                return 20; //todo add job fail
+                println("add job fail");
+                return false; //todo add job fail
             }
 
-            println( "2.1 save docker image "+jobId);
+            println( "2.1 save docker image "+jobId+imageName);
 //            for(String image:images){
 //                uploadImage(jobId,image);
 //            }
-            uploadImage(jobId,imageName);
-            boolean status=updateJobStatus(jobId,10);
-            if(status!=true){
-                println( "fail");
-                return 10; //todo update status fail
-            }else{
-                println( "success update jenkins job status");
-            }
-            int result = 0;
-            timeout(time: 30, unit: 'MINUTES') {
+            if(uploadImage(jobId,imageName)){
+                boolean status=updateJobStatus(jobId,10);
+                if(status!=true){
+                    println( "fail");
+                    return false; //todo update status fail
+                }
                 while(result <= 0) {
                     result = checkResult(jobId);
-                    sleep 10;
+                    if(result>0){
+                        break;
+                    }
+                    sleep 5*1000;
+                }
+                /**
+                 UNDONE(0),
+                 FAIL(1),
+                 PASS(5),
+                 CANCEL(10);
+                 */
+                if(result==5){
+                    return true;
                 }
             }
-            return result;
+            return false;
         } catch(err) {
             println(err)
-
-        }finally {
-
         }
-        return 30;
+        return false;
+    }
+
+    public static void main(String[] arg){
+        def ctrlHost = "http://172.30.154.23:10023";
+        def jenkinsHost = "test}";
+        def projectName = "test";
+        def buildNumber = "012";
+        // def userName = "${env.BUILD_USER_ID}";
+        def imageName = "redis:latest";
+        def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
+
+       def jenkins = new FortiCSForJenkins(ctrlHost,controllerToken,jenkinsHost,projectName,buildNumber);
+        jenkins.imageName=imageName;
+        def result = jenkins.imageScan();
+        println(result);
+
     }
 }
 
