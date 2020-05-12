@@ -21,7 +21,7 @@ class FortiCSForJenkins {
     String imageName
 
     FortiCSForJenkins(ctrlHost,ctrlToken,jenkinsHost,projectName,buildNumber){
-        pringln( "test");
+        println("testtest");
         this.ctrlHost = ctrlHost;
         this.controllerToken = ctrlToken;
         this.jenkinsHost = jenkinsHost;
@@ -38,7 +38,7 @@ class FortiCSForJenkins {
 
     def String addJob() {
         def desc = sh("""docker images""")
-        pringln(desc);
+        println(desc);
         def jsonBody = ["jobName" : "${projectName}",
                         "jobHost": "${jenkinsHost}",
                         "buildNumber": "${buildNumber}"]
