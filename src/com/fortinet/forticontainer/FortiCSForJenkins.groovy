@@ -20,8 +20,9 @@ class FortiCSForJenkins {
     private String buildNumber;
     String imageName
 
-    public FortiCSForJenkins(ctrlHost,ctrlToken,jenkinsHost,projectName,buildNumber){
-        println(ctrlHost,ctrlHost)
+    FortiCSForJenkins(ctrlHost,ctrlToken,jenkinsHost,projectName,buildNumber){
+        println("test");
+        echo "test"
         this.ctrlHost = ctrlHost;
         this.controllerToken = ctrlToken;
         this.jenkinsHost = jenkinsHost;
