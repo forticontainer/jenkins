@@ -128,7 +128,7 @@ class FortiCSForJenkins {
         println( "build number : " + buildNumber);
 
         try {
-            jobId=addJob();
+            def jobId=addJob();
             if(jobId==""){
                 echo "add job fail";
                 return 20; //todo add job fail
@@ -142,10 +142,8 @@ class FortiCSForJenkins {
             boolean status=updateJobStatus(jobId,10);
             if(status!=true){
                 println( "fail");
-                currentBuild.result = 'FAILURE'
                 return 10; //todo update status fail
             }else{
-                println( "testing");
                 println( "success update jenkins job status");
             }
             int result = 0;
