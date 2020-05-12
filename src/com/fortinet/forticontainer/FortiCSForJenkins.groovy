@@ -125,10 +125,10 @@ class FortiCSForJenkins {
     def int imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);
-                println( "build number : " + buildNumber);
+        println( "build number : " + buildNumber);
 
         try {
-            jobId=addJob(ctrlHost, controllerToken, projectName, jenkinsHost, buildNumber);
+            jobId=addJob();
             if(jobId==""){
                 echo "add job fail";
                 return 20; //todo add job fail
