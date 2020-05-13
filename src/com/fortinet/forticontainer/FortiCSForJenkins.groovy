@@ -13,27 +13,21 @@ import groovy.json.JsonBuilder
  */
 
 class FortiCSForJenkins {
-    private String ctrlHost;
-    private String controllerToken;
-//    private List<String> images=new ArrayList<>();
-    private String jenkinsHost;
-    private String projectName;
-    private String buildNumber;
-    String imageName
+    def String ctrlHost;
+    def String controllerToken;
+    def List<String> images=new ArrayList<>();
+    def String jenkinsHost;
+    def String projectName;
+    def String buildNumber;
 
-    FortiCSForJenkins(ctrlHost,ctrlToken,jenkinsHost,projectName,buildNumber){
+    def Map<String,String> imageResult=new HashMap<>();
+    def String message;
+
+    FortiCSForJenkins(){
         println("testtest");
-        this.ctrlHost = ctrlHost;
-        this.controllerToken = ctrlToken;
-        this.jenkinsHost = jenkinsHost;
-        this.projectName = projectName;
-        this.buildNumber = buildNumber;
-//        this.images = new ArrayList<>();
+
     }
 
-//    def void addImage(String image){
-//        this.images.add(image);
-//    }
 
 
 
@@ -76,7 +70,7 @@ class FortiCSForJenkins {
             return false;
         }
 
-        def uploadFile = new HttpUploadFile(i+"/api/v1/jenkins/image/"+jobId,controllerToken,imageName);
+        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,imageName);
         def result = uploadFile.upload(imageFile);
         def remove = "rm -rf /tmp/tmp_image.tar".execute()
         remove.waitFor();
@@ -146,46 +140,50 @@ class FortiCSForJenkins {
             def jobId=addJob();
             if(jobId==""){
                 println("add job fail");
+                message = "add job fail";
                 return false; //todo add job fail
             }
 
-            println( "2.1 save docker image "+jobId+imageName);
+            println( "2.1 save docker image "+jobId);
 //            for(String image:images){
 //                uploadImage(jobId,image);
 //            }
-            if(uploadImage(jobId,imageName)){
-                boolean status=updateJobStatus(jobId,10);
-                if(status!=true){
-                    println( "fail");
-                    return false; //todo update status fail
-                }
-                while(result <= 0) {
-                    result = checkResult(jobId);
-                    if(result>0){
-                        break;
-                    }
-                    sleep 5*1000;
-                }
-                /**
-                 UNDONE(0),
-                 FAIL(1),
-                 PASS(5),
-                 CANCEL(10);
-                 */
-                if(result==5){
-                    return true;
-                }
+            for(String imageName:images){
+                imageResult.put(imageName,uploadImage(jobId,imageName));
             }
-            return false;
+            boolean status=updateJobStatus(jobId,10);
+            if(status!=true){
+                println( "fail");
+                message = "update fail";
+                return false; //todo update status fail
+            }
+            while(result <= 0) {
+                result = checkResult(jobId);
+                if(result>0){
+                    break;
+                }
+                sleep 5*1000;
+            }
+            /**
+             UNDONE(0),
+             FAIL(1),
+             PASS(5),
+             CANCEL(10);
+             */
+            if(result==5){
+                return true;
+            }
+            message = result;
         } catch(err) {
+            message=err.getMessage();
             println(err)
         }
         return false;
     }
 
     public static void main(String[] arg){
-//        def ctrlHost = "http://172.30.154.23:10023";
-        def ctrlHost = "http://127.0.0.1:8000";
+        def ctrlHost = "http://172.30.154.23:10023";
+//        def ctrlHost = "http://127.0.0.1:8000";
         def jenkinsHost = "test";
         def projectName = "test";
         def buildNumber = "012";
@@ -193,10 +191,18 @@ class FortiCSForJenkins {
         def imageName = "redis:latest";
         def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
 
-       def jenkins = new FortiCSForJenkins(ctrlHost,controllerToken,jenkinsHost,projectName,buildNumber);
-        jenkins.imageName=imageName;
+       def jenkins = new FortiCSForJenkins();
+        jenkins.ctrlHost=ctrlHost;
+        jenkins.controllerToken=controllerToken;
+        jenkins.jenkinsHost=jenkinsHost;
+        jenkins.projectName=projectName;
+        jenkins.buildNumber=buildNumber;
+        jenkins.images.add(imageName);
+
         def result = jenkins.imageScan();
         println(result);
+        println("fail message : "+jenkins.message);
+        println(jenkins.imageResult);
 
     }
 }
