@@ -2,8 +2,6 @@ package com.fortinet.forticontainer
 
 import groovy.json.JsonBuilder
 
-import java.util.concurrent.TimeUnit
-
 /**
  *     def jenkinsHost = "${env.JOB_URL}";
  *     def projectName = "${env.JOB_NAME}";
@@ -78,12 +76,11 @@ class FortiCSForJenkins {
             return false;
         }
 
-        def cmd = "curl --location --request POST '${ctrlHost}/api/v1/jenkins/image/${jobId}'  -H 'Content-Type: multipart/form-data'  -H 'x-controller-token: ${controllerToken}' -H 'imageName: ${imageName}' --form 'file=@/tmp/tmp_image.tar'";
-        println cmd;
-        def proc= cmd.execute();
-        proc.waitFor();
-        "rm -rf /tmp/tmp_image.tar".execute()
-        return true;
+        def uploadFile = new HttpUploadFile(i+"/api/v1/jenkins/image/"+jobId,controllerToken,imageName);
+        def result = uploadFile.upload(imageFile);
+        def remove = "rm -rf /tmp/tmp_image.tar".execute()
+        remove.waitFor();
+        return result;
     }
 
     def Boolean updateJobStatus(String jobId,Integer status){
@@ -187,8 +184,9 @@ class FortiCSForJenkins {
     }
 
     public static void main(String[] arg){
-        def ctrlHost = "http://172.30.154.23:10023";
-        def jenkinsHost = "test}";
+//        def ctrlHost = "http://172.30.154.23:10023";
+        def ctrlHost = "http://127.0.0.1:8000";
+        def jenkinsHost = "test";
         def projectName = "test";
         def buildNumber = "012";
         // def userName = "${env.BUILD_USER_ID}";
