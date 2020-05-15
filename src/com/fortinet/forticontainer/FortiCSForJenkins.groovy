@@ -130,7 +130,7 @@ class FortiCSForJenkins {
         }
         return result;
     }
-
+    @NonCPS
     def boolean imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);
