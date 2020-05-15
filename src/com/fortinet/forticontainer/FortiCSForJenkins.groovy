@@ -11,7 +11,7 @@ import groovy.json.JsonBuilder
  *     def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
  *     def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
  */
-
+@NonCPS
 class FortiCSForJenkins {
     def String ctrlHost;
     def String controllerToken;
