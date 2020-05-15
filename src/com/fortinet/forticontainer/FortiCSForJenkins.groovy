@@ -21,7 +21,7 @@ class FortiCSForJenkins {
     def String buildNumber;
 
     def Map<String,String> imageResult=new HashMap<>();
-    def String message;
+    def String message="no message";
 
     FortiCSForJenkins(){
         println("testtest");
@@ -59,13 +59,13 @@ class FortiCSForJenkins {
     }
 
     def Boolean uploadImage(String jobId,String imageName) {
-        def save="docker save ${imageName} -o /tmp/tmp_image.tar ".execute();
+        def save="docker save ${imageName} -o /tmp/${imageName}.tar ".execute();
         save.waitFor();
         println save.text;
         def lsResult = "ls -lh /tmp/".execute();
         println(lsResult.text);
 
-        def imageFile = new File("/tmp/tmp_image.tar");
+        def imageFile = new File("/tmp/${imageName}.tar");
         if(!imageFile.exists()){
             return false;
         }
