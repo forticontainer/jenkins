@@ -11,7 +11,7 @@ import groovy.json.JsonBuilder
  *     def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
  *     def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
  */
-@NonCPS
+
 class FortiCSForJenkins {
     def String ctrlHost;
     def String controllerToken;
@@ -30,7 +30,7 @@ class FortiCSForJenkins {
 
 
 
-
+    @NonCPS
     def String addJob() {
         def desc = "docker images".execute();
         println(desc.text);
@@ -57,7 +57,8 @@ class FortiCSForJenkins {
         }
         return "";
     }
-
+    
+    @NonCPS
     def Boolean uploadImage(String jobId,String imageName) {
         def save="docker save ${imageName} -o /tmp/${imageName}.tar ".execute();
         save.waitFor();
@@ -76,7 +77,7 @@ class FortiCSForJenkins {
         remove.waitFor();
         return result;
     }
-
+    @NonCPS
     def Boolean updateJobStatus(String jobId,Integer status){
         def jsonBody = ["status": "${status}"]
         def post = new URL("${ctrlHost}/api/v1/jenkins/job/${jobId}").openConnection();
@@ -100,7 +101,7 @@ class FortiCSForJenkins {
         }
     }
 
-// @NonCPS
+    @NonCPS
     def int checkResult(String jobId) {
         int result=0;
         int status=0;
