@@ -47,11 +47,21 @@ timestamps{
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
             try {
-                def result = jenkins.imageScan();
+                def jobId = jenkins.addJob();
+                println("the job id is ${jobId}")
+
+                if(jobIdTest==""){
+                    println("add job fail");
+                }
+
+                echo("uploading image with name is ${imageName}, job id is ${jobId}")
+
+                def uploadTest = uploadImage(jobId, imageName);
+                println("the upload result is ${uploadTest}")
             } catch(err) {
                 println("the error while image scan is" + err)
             }
-            
+            // def result = jenkins.imageScan();
             println("the image scan result is ${result}");
             println("fail message : "+jenkins.message);
             println(jenkins.imageResult);
