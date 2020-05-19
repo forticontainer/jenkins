@@ -3,7 +3,7 @@ import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
 import com.fortinet.forticontainer.HttpUploadFile
 
-
+@NonCPS
 def Boolean uploadImageTesting(String jobId,String imageName) {
     def tempTarFile = "tempTarFile:latest"
     def save="sudo docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
@@ -17,8 +17,8 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
 
     def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
     def result = uploadFile.upload(imageFile);
-    def remove = "sudo rm -rf /tmp/tempTarFile:latest.tar".execute()
-    remove.waitFor();
+    // def remove = "sudo rm -rf /tmp/tempTarFile:latest.tar".execute()
+    // remove.waitFor();
     return result;
 }
 node {
@@ -74,7 +74,12 @@ timestamps{
             println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
-                def uploadStatus = uploadImageTesting(jobId,image);
+                try {
+                    def uploadStatus = uploadImageTesting(jobId,image);
+                } catch(err) {
+                    println("the err while uploading is " + err);
+                }
+                
                 print("the uploading status is ${uploadStatus}");
                 jenkins.imageResult.put(image, uploadStatus);
             }
