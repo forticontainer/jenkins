@@ -30,7 +30,7 @@ class FortiCSForJenkins {
 
 
 
-
+    @NonCPS
     def String addJob() {
         def jsonBody = ["jobName" : "${projectName}",
                         "jobHost": "${jenkinsHost}",
@@ -55,7 +55,8 @@ class FortiCSForJenkins {
         }
         return "";
     }
-
+    
+    @NonCPS
     def Boolean uploadImage(String jobId,String imageName) {
         def save="docker save ${imageName} -o /tmp/${imageName}.tar ".execute();
         save.waitFor();
@@ -72,7 +73,7 @@ class FortiCSForJenkins {
         remove.waitFor();
         return result;
     }
-
+    @NonCPS
     def Boolean updateJobStatus(String jobId,Integer status){
         def jsonBody = ["status": "${status}"]
         def post = new URL("${ctrlHost}/api/v1/jenkins/job/${jobId}").openConnection();
@@ -96,7 +97,7 @@ class FortiCSForJenkins {
         }
     }
 
-// @NonCPS
+    @NonCPS
     def int checkResult(String jobId) {
         int result=0;
         int status=0;
@@ -126,7 +127,7 @@ class FortiCSForJenkins {
         }
         return result;
     }
-
+    @NonCPS
     def boolean imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);

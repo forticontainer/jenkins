@@ -108,11 +108,12 @@ class HttpUploadFile {
 //          addFormField("file", "{\"name\":\"tmp_image.tar\"}");
             addFilePart("file", file);
             List<String> response = finish();
-            for (String line : response) {
-                if("ok".equalsIgnoreCase(line)){
-                    return true;
-                }
-            }
+            // for (String line : response) {
+            //     if("ok".equalsIgnoreCase(line)){
+            //         return true;
+            //     }
+            // }
+            return true;
         } catch (IOException ex) {
             System.out.println("ERROR: " + ex.getMessage());
             return false;
