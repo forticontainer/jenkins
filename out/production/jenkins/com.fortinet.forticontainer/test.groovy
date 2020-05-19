@@ -41,14 +41,17 @@ timestamps{
         }
 
         stage("image scan") {
-           echo "new jenkins plugin";
-           def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
-           println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
-           jenkins.images.add(imageName)
-             
-            println("the update jenkins status is ${updateJobStatus}")
+            echo "new jenkins plugin";
+            def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
+            println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
+            jenkins.images.add(imageName)
+            println("the image has been add to jenkins ${jenkins.images}")
+            try {
+                def result = jenkins.imageScan();
+            } catch(err) {
+                println("the error while image scan is" + err)
+            }
             
-            def result = jenkins.imageScan();
             println("the image scan result is ${result}");
             println("fail message : "+jenkins.message);
             println(jenkins.imageResult);
