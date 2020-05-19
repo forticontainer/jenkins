@@ -2,6 +2,24 @@
 import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
 
+
+def Boolean uploadImageTesting(String jobId,String imageName) {
+    def tempTarFile = "tempTarFile:latest"
+    def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    save.waitFor();
+    println save.text;
+
+    def imageFile = new File("/tmp/${tempTarFile}.tar");
+    if(!imageFile.exists()){
+        return false;
+    }
+
+    def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
+    def result = uploadFile.upload(imageFile);
+    def remove = "rm -rf /tmp/tempTarFile:latest.tar".execute()
+    remove.waitFor();
+    return result;
+}
 node {
 
     // ctrlHost = "http://172.30.154.23:10023";
@@ -55,21 +73,13 @@ timestamps{
             println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
-                def uploadStatus = jenkins.uploadImage(jobId,image);
+                def uploadStatus = uploadImageTesting(jobId,image);
                 print("the uploading status is ${uploadStatus}");
                 jenkins.imageResult.put(image, uploadStatus);
             }
             boolean status=updateJobStatus(jobId,10);
             print("the status has been update to jobId ${jobId} with status ${status}")
-            try {
 
-                echo("uploading image with name is ${imageName}, job id is ${jobId}")
-
-                def uploadTest = uploadImage(jobId, imageName);
-                println("the upload result is ${uploadTest}")
-            } catch(err) {
-                println("the error while image scan is" + err)
-            }
             // def result = jenkins.imageScan();
             println("the image scan result is ${result}");
             println("fail message : "+jenkins.message);
