@@ -57,9 +57,12 @@ timestamps{
                 println("the error while uploading jenkins infor is " + err)
             }
 
-            echo("save 2.1 save docker image" +jobId)
+            println("save 2.1 save docker image  ${jobId}")
             for(String image:jenkins.images){
-                jenkins.imageResult.put(image,jenkins.uploadImage(jobId,image));
+                print("uploading the image ${image} to jobId ${jobId}")
+                uploadStatus = jenkins.uploadImage(jobId,image);
+                print("the uploading status is ${uploadStatus}");
+                jenkins.imageResult.put(image, uploadStatus);
             }
             boolean status=updateJobStatus(jobId,10);
             print("the status has been update to jobId ${jobId} with status ${status}")
