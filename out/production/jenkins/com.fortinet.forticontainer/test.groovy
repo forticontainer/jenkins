@@ -10,10 +10,11 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     def sout = new StringBuilder(), serr = new StringBuilder()
 
     def tempTarFile = "testing:latest"
-    def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    // def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    def save = "ls /tmp".execute();
     save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
-   
+    println("sout : ${sout}, serr : ${serr}")
 
     def imageFile = new File("/tmp/${tempTarFile}.tar");
     if(!imageFile.exists()){
