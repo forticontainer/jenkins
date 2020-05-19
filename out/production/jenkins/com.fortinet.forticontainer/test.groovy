@@ -9,7 +9,7 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
     def sout = new StringBuilder(), serr = new StringBuilder()
 
-    def tempTarFile = "tempTarFile:latest"
+    def tempTarFile = "testing:latest"
     def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
     save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
@@ -83,9 +83,8 @@ timestamps{
                 print("uploading the image ${image} to jobId ${jobId}")
                 def tempTarFile = "tempTarFile:latest"
                 try {
-                    // def uploadStatus = uploadImageTesting(jobId,image);
+                     def uploadStatus = uploadImageTesting(jobId,image);
                     sh("""
-                        docker save ${imageName} -o /tmp/${tempTarFile}.tar 
                         ls /tmp
                        """)
                 } catch(err) {
