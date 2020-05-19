@@ -47,17 +47,11 @@ timestamps{
             println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
-            try {
-                def jobId = jenkins.addJob();
-                println("the job id is ${jobId}")
-                if(jobId==""){
-                    println("add job fail");
-                }
-            } catch(err) {
-                println("the error while uploading jenkins infor is " + err)
-            }
-
-            println("save 2.1 save docker image  ${jobId}")
+            
+            def jobId = jenkins.addJob();
+            println("the job id is ${jobId}");
+           
+            println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
                 uploadStatus = jenkins.uploadImage(jobId,image);
