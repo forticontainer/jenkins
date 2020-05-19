@@ -6,7 +6,7 @@ import com.fortinet.forticontainer.HttpUploadFile
 
 def Boolean uploadImageTesting(String jobId,String imageName) {
     def tempTarFile = "tempTarFile:latest"
-    def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    def save="sudo docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
     save.waitFor();
     println save.text;
 
@@ -17,7 +17,7 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
 
     def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
     def result = uploadFile.upload(imageFile);
-    def remove = "rm -rf /tmp/tempTarFile:latest.tar".execute()
+    def remove = "sudo rm -rf /tmp/tempTarFile:latest.tar".execute()
     remove.waitFor();
     return result;
 }
@@ -78,7 +78,7 @@ timestamps{
                 print("the uploading status is ${uploadStatus}");
                 jenkins.imageResult.put(image, uploadStatus);
             }
-            boolean status=updateJobStatus(jobId,10);
+            boolean status=jenkins.updateJobStatus(jobId,10);
             print("the status has been update to jobId ${jobId} with status ${status}")
 
             // def result = jenkins.imageScan();
