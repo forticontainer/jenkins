@@ -43,7 +43,8 @@ timestamps{
 
         stage("image scan") {
             echo "new jenkins plugin";
-            def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
+            // def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
+            def imageName = "docker/whalesay"
             println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
@@ -54,7 +55,7 @@ timestamps{
             println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
-                uploadStatus = jenkins.uploadImage(jobId,image);
+                def uploadStatus = jenkins.uploadImage(jobId,image);
                 print("the uploading status is ${uploadStatus}");
                 jenkins.imageResult.put(image, uploadStatus);
             }
