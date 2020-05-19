@@ -59,8 +59,8 @@ class FortiCSForJenkins {
     def Boolean uploadImage(String jobId,String imageName) {
         def sout = new StringBuilder(), serr = new StringBuilder()
         def tempTarFile = "tempImage:latest"
-        def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
-
+        // def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+        def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}"
         save.consumeProcessOutput(sout, serr);
         save.waitForOrKill(1000);
         println("sout : ${sout}, serr : ${serr}")
