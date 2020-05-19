@@ -13,10 +13,11 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
     save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
-    println "out> ${sout} err> ${serr}"
+   
 
     def imageFile = new File("/tmp/${tempTarFile}.tar");
     if(!imageFile.exists()){
+        println("did not fund the file ")
         return false;
     }
 
