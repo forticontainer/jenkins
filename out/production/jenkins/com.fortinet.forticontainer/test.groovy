@@ -5,7 +5,7 @@ import com.fortinet.forticontainer.FortiCSForJenkins
 node {
 
     // ctrlHost = "http://172.30.154.23:10023";
-    ctrlHost = "internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
+    ctrlHost = "http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
     jenkinsHost = "${env.JOB_URL}";
     projectName = "${env.JOB_NAME}";
     buildNumber = "${env.BUILD_NUMBER}";
