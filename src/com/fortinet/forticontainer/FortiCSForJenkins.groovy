@@ -1,6 +1,7 @@
 package com.fortinet.forticontainer
 
 import groovy.json.JsonBuilder
+import com.fortinet.forticontainer.HttpUploadFile
 
 /**
  *     def jenkinsHost = "${env.JOB_URL}";

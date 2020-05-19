@@ -1,6 +1,7 @@
 @Library('forticasb-shared-library') _
 import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
+import com.fortinet.forticontainer.HttpUploadFile
 
 
 def Boolean uploadImageTesting(String jobId,String imageName) {
