@@ -32,8 +32,6 @@ class FortiCSForJenkins {
 
 
     def String addJob() {
-        def desc = "docker images".execute();
-        println(desc.text);
         def jsonBody = ["jobName" : "${projectName}",
                         "jobHost": "${jenkinsHost}",
                         "buildNumber": "${buildNumber}"]
@@ -62,8 +60,6 @@ class FortiCSForJenkins {
         def save="docker save ${imageName} -o /tmp/${imageName}.tar ".execute();
         save.waitFor();
         println save.text;
-        def lsResult = "ls -lh /tmp/".execute();
-        println(lsResult.text);
 
         def imageFile = new File("/tmp/${imageName}.tar");
         if(!imageFile.exists()){
@@ -184,11 +180,11 @@ class FortiCSForJenkins {
     public static void main(String[] arg){
         def ctrlHost = "http://172.30.154.23:10023";
 //        def ctrlHost = "http://127.0.0.1:8000";
-        def jenkinsHost = "test";
-        def projectName = "test";
-        def buildNumber = "012";
+        def jenkinsHost = "container";
+        def projectName = "forticontainer";
+        def buildNumber = "01";
         // def userName = "${env.BUILD_USER_ID}";
-        def imageName = "redis:latest";
+        def imageName = "nginx:latest";
         def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
 
        def jenkins = new FortiCSForJenkins();
