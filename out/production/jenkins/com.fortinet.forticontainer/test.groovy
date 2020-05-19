@@ -3,31 +3,31 @@ import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
 import com.fortinet.forticontainer.HttpUploadFile
 
-@NonCPS
-def Boolean uploadImageTesting(String jobId,String imageName) {
-    def ctrlHost = "http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
-    def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
-    def sout = new StringBuilder(), serr = new StringBuilder()
+// @NonCPS
+// def Boolean uploadImageTesting(String jobId,String imageName) {
+//     def ctrlHost = "http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
+//     def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
+//     def sout = new StringBuilder(), serr = new StringBuilder()
 
-    def tempTarFile = "testing:latest"
-    // def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
-    def save = "ls /tmp".execute();
-    save.consumeProcessOutput(sout, serr);
-    save.waitForOrKill(1000);
-    println("sout : ${sout}, serr : ${serr}")
+//     def tempTarFile = "testing:latest"
+//     def save = "docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    
+//     save.consumeProcessOutput(sout, serr);
+//     save.waitForOrKill(1000);
+//     println("sout : ${sout}, serr : ${serr}")
 
-    def imageFile = new File("/tmp/${tempTarFile}.tar");
-    if(!imageFile.exists()){
-        println("did not fund the file ")
-        return false;
-    }
+//     def imageFile = new File("/tmp/${tempTarFile}.tar");
+//     if(!imageFile.exists()){
+//         println("did not fund the file ")
+//         return false;
+//     }
 
-    def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
-    def result = uploadFile.upload(imageFile);
-    // def remove = "sudo rm -rf /tmp/tempTarFile:latest.tar".execute()
-    // remove.waitFor();
-    return result;
-}
+//     def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
+//     def result = uploadFile.upload(imageFile);
+//     // def remove = "sudo rm -rf /tmp/tempTarFile:latest.tar".execute()
+//     // remove.waitFor();
+//     return result;
+// }
 
 node {
 
@@ -76,29 +76,29 @@ timestamps{
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
             
-            def jobId = jenkins.addJob();
-            println("the job id is ${jobId}");
+            // def jobId = jenkins.addJob();
+            // println("the job id is ${jobId}");
            
-            println("save 2.1 save docker image ${jobId}");
-            for(String image:jenkins.images){
-                print("uploading the image ${image} to jobId ${jobId}")
-                def tempTarFile = "tempTarFile:latest"
-                try {
-                     def uploadStatus = uploadImageTesting(jobId,image);
-                    sh("""
-                        ls /tmp
-                       """)
-                } catch(err) {
-                    println("the err while uploading is " + err);
-                }
+            // println("save 2.1 save docker image ${jobId}");
+            // for(String image:jenkins.images){
+            //     print("uploading the image ${image} to jobId ${jobId}")
+            //     def tempTarFile = "tempTarFile:latest"
+            //     try {
+            //          def uploadStatus = uploadImageTesting(jobId,image);
+            //         sh("""
+            //             ls /tmp
+            //            """)
+            //     } catch(err) {
+            //         println("the err while uploading is " + err);
+            //     }
                 
-                print("the uploading status is ${uploadStatus}");
-                jenkins.imageResult.put(image, uploadStatus);
-            }
-            boolean status=jenkins.updateJobStatus(jobId,10);
-            print("the status has been update to jobId ${jobId} with status ${status}")
+            //     print("the uploading status is ${uploadStatus}");
+            //     jenkins.imageResult.put(image, uploadStatus);
+            // }
+            // boolean status=jenkins.updateJobStatus(jobId,10);
+            // print("the status has been update to jobId ${jobId} with status ${status}")
 
-            // def result = jenkins.imageScan();
+            def result = jenkins.imageScan();
             println("the image scan result is ${result}");
             println("fail message : "+jenkins.message);
             println(jenkins.imageResult);
