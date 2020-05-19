@@ -81,8 +81,13 @@ timestamps{
             println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
+                def tempTarFile = "tempTarFile:latest"
                 try {
-                    def uploadStatus = uploadImageTesting(jobId,image);
+                    // def uploadStatus = uploadImageTesting(jobId,image);
+                    sh("""
+                        docker save ${imageName} -o /tmp/${tempTarFile}.tar 
+                        ls /tmp
+                       """)
                 } catch(err) {
                     println("the err while uploading is " + err);
                 }
