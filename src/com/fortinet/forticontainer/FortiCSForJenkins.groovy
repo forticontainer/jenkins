@@ -158,11 +158,11 @@ class FortiCSForJenkins {
             }
             /**
              UNDONE(0),
-             FAIL(1),
-             PASS(5),
-             CANCEL(10);
+             FAIL(10),
+             CANCEL(20),
+             PASS(100);
              */
-            if(result==5){
+            if(result==100){
                 return true;
             }
             message = result;
