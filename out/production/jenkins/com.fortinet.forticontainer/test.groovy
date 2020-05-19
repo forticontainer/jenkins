@@ -49,10 +49,13 @@ timestamps{
             try {
                 def jobId = jenkins.addJob();
                 println("the job id is ${jobId}")
-
                 if(jobIdTest==""){
                     println("add job fail");
                 }
+            } catch(err) {
+                println("the error while uploading jenkins infor is " + err)
+            }
+            try {
 
                 echo("uploading image with name is ${imageName}, job id is ${jobId}")
 
