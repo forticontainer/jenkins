@@ -21,6 +21,7 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     // remove.waitFor();
     return result;
 }
+
 node {
 
     // ctrlHost = "http://172.30.154.23:10023";
@@ -74,6 +75,12 @@ timestamps{
             println("save 2.1 save docker image ${jobId}");
             for(String image:jenkins.images){
                 print("uploading the image ${image} to jobId ${jobId}")
+
+                def sout = new StringBuilder(), serr = new StringBuilder()
+                def proc = 'ls /tmp'.execute()
+                proc.consumeProcessOutput(sout, serr)
+                proc.waitForOrKill(1000)
+                println "out> ${sout} err> ${serr}"
                 try {
                     def uploadStatus = uploadImageTesting(jobId,image);
                 } catch(err) {
