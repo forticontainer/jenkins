@@ -76,29 +76,29 @@ timestamps{
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
             
-            // def jobId = jenkins.addJob();
-            // println("the job id is ${jobId}");
+            def jobId = jenkins.addJob();
+            println("the job id is ${jobId}");
            
-            // println("save 2.1 save docker image ${jobId}");
-            // for(String image:jenkins.images){
-            //     print("uploading the image ${image} to jobId ${jobId}")
-            //     def tempTarFile = "tempTarFile:latest"
-            //     try {
-            //          def uploadStatus = uploadImageTesting(jobId,image);
-            //         sh("""
-            //             ls /tmp
-            //            """)
-            //     } catch(err) {
-            //         println("the err while uploading is " + err);
-            //     }
+            println("save 2.1 save docker image ${jobId}");
+            for(String image:jenkins.images){
+                print("uploading the image name: ${image} to jobId : ${jobId}")
+                def tempTarFile = "tempTarFile:latest"
+                try {
+                     def uploadStatus = jenkins.uploadImage(jobId,image);
+                    sh("""
+                        ls /tmp
+                       """)
+                } catch(err) {
+                    println("the err while uploading is " + err);
+                }
                 
-            //     print("the uploading status is ${uploadStatus}");
-            //     jenkins.imageResult.put(image, uploadStatus);
-            // }
+                print("the uploading status is ${uploadStatus}");
+                jenkins.imageResult.put(image, uploadStatus);
+            }
             // boolean status=jenkins.updateJobStatus(jobId,10);
             // print("the status has been update to jobId ${jobId} with status ${status}")
 
-            def result = jenkins.imageScan();
+            // def result = jenkins.imageScan();
             println("the image scan result is ${result}");
             println("fail message : "+jenkins.message);
             println(jenkins.imageResult);
