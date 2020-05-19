@@ -50,12 +50,19 @@ timestamps{
             try {
                 def jobId = jenkins.addJob();
                 println("the job id is ${jobId}")
-                if(jobIdTest==""){
+                if(jobId==""){
                     println("add job fail");
                 }
             } catch(err) {
                 println("the error while uploading jenkins infor is " + err)
             }
+
+            echo("save 2.1 save docker image" +jobId)
+            for(String image:jenkins.images){
+                jenkins.imageResult.put(image,jenkins.uploadImage(jobId,image));
+            }
+            boolean status=updateJobStatus(jobId,10);
+            print("the status has been update to jobId ${jobId} with status ${status}")
             try {
 
                 echo("uploading image with name is ${imageName}, job id is ${jobId}")
