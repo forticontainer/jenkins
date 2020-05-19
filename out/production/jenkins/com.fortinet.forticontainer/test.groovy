@@ -8,15 +8,16 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     def ctrlHost = "http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
     def controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
     def sout = new StringBuilder(), serr = new StringBuilder()
-    def proc = 'ls /tmp'.execute()
-    proc.consumeProcessOutput(sout, serr)
-    proc.waitForOrKill(1000)
-    println "out> ${sout} err> ${serr}"
+    // def proc = 'ls /tmp'.execute()
+    // proc.consumeProcessOutput(sout, serr)
+    // proc.waitForOrKill(1000)
+    // println "out> ${sout} err> ${serr}"
 
     def tempTarFile = "tempTarFile:latest"
-    def save="sudo docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    def save = "sudo docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
-    println save.text;
+    println "out> ${sout} err> ${serr}"
 
     def imageFile = new File("/tmp/${tempTarFile}.tar");
     if(!imageFile.exists()){
