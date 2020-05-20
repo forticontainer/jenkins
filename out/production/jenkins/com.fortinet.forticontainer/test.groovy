@@ -4,6 +4,16 @@ import com.fortinet.forticontainer.FortiCSForJenkins
 import com.fortinet.forticontainer.HttpUploadFile
 
 
+def Boolean saveDockerimage(String imageName) {
+    def sout = new StringBuilder(), serr = new StringBuilder();
+    def tempTarFile = "abcImage:latest";
+    // def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
+    def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    save.consumeProcessOutput(sout, serr);
+    save.waitForOrKill(1000);
+    println("sout : ${sout}, serr : ${serr}")
+}
+
 node {
 
     // ctrlHost = "http://172.30.154.23:10023";
@@ -56,7 +66,7 @@ timestamps{
            
             println("save 2.1 save docker image ${jobId}");
             try {
-                def response = jenkins.saveDockerimage(imageName);
+                def response = saveDockerimage(imageName);
                 print("response : ${response}");
             } catch(err){
                 println("the error message is " + err)
