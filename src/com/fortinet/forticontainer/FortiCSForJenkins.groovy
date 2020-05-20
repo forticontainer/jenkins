@@ -66,19 +66,20 @@ class FortiCSForJenkins {
     }
     
     def Boolean uploadImage(String jobId,String imageName) {
-        def imageTarFile = "${imageName}:latest"
-        def save="docker save ${imageName} -o /tmp/${imageTarFile}.tar ".execute();
+        def temImageName = imageName.split("/")[-1];
+        String nameWithTag = "${temImageName}:latest"
+        def save="docker save ${imageName} -o /tmp/${nameWithTag}.tar".execute();
         save.waitFor();
         // println save.text;
 
-        def imageFile = new File("/tmp/${imageTarFile}.tar");
+        def imageFile = new File("/tmp/${nameWithTag}.tar");
         if(!imageFile.exists()){
             return false;
         }
 
-        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,imageTarFile);
+        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,nameWithTag);
         def result = uploadFile.upload(imageFile);
-        def remove = "rm -rf /tmp/tmp_image.tar".execute()
+        def remove = "rm -rf /tmp/${nameWithTag}.tar".execute()
         remove.waitFor();
         return result;
     }
