@@ -85,7 +85,16 @@ timestamps{
             println("the job id is ${jobId}");
            
             println("save 2.1 save docker image ${jobId}");
-            jenkins.uploadImage(jobId, imageName)
+            
+            def imageFile = new File("/tmp/tempImage:latest.tar");
+            if(!imageFile.exists()){
+                println("the file not found");
+            }
+            def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
+            def result = uploadFile.upload(imageFile);      
+
+
+
             // for(String image:jenkins.images){
             //     print("uploading the image name: ${image} to jobId : ${jobId}")
             //     def tempTarFile = "tempTarFile:latest"
