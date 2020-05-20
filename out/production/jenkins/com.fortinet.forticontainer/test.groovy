@@ -34,6 +34,72 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     // return result;
 }
 
+public void sendPOSTRequest(String url, String controllerToken, String attachmentFilePath)
+    {
+        String charset = "UTF-8";
+        File binaryFile = new File(attachmentFilePath);
+        String boundary = "------------------------" + Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+        String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+        int    responseCode = 0;
+
+        try 
+        {
+            //Set POST general headers along with the boundary string (the seperator string of each part)
+            URLConnection connection = new URL(url).openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            connection.addRequestProperty("User-Agent", "CheckpaySrv/1.0.0");        
+            connection.setRequestProperty("x-controller-token", "${controllerToken}")
+            
+
+            OutputStream output = connection.getOutputStream();
+            PrintWriter writer  = new PrintWriter(new OutputStreamWriter(output, charset), true);
+
+            // Send binary file - part
+            // Part header
+            writer.append("--" + boundary).append(CRLF);
+            writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+            writer.append("Content-Type: application/octet-stream").append(CRLF);// + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
+            writer.append(CRLF).flush();
+
+            // File data
+            Files.copy(binaryFile.toPath(), output);
+            output.flush(); 
+
+            // End of multipart/form-data.
+            writer.append(CRLF).append("--" + boundary + "--").flush();
+
+            responseCode = ((HttpURLConnection) connection).getResponseCode();
+
+
+            if(responseCode !=200) //We operate only on HTTP code 200
+                return;
+
+            // InputStream Instream = ((HttpURLConnection) connection).getInputStream();
+
+            // // Write PDF file 
+            // BufferedInputStream BISin = new BufferedInputStream(Instream);
+            // FileOutputStream FOSfile  = new FileOutputStream(outputFilePathName);
+            // BufferedOutputStream out  = new BufferedOutputStream(FOSfile);
+
+            // int i;
+            // while ((i = BISin.read()) != -1) {
+            //     out.write(i);
+            // }
+
+            // // Cleanup
+            // out.flush();
+            // out.close();
+
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
 node {
 
     // ctrlHost = "http://172.30.154.23:10023";
@@ -93,7 +159,8 @@ timestamps{
             def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
             print("The uploadFile init success with boundary ${uploadFile.boundary}");
             try {
-                def result = uploadFile.upload(imageFile); 
+                // def result = uploadFile.upload(imageFile);
+                sendPOSTRequest(ctrlHost+"/api/v1/jenkins/image/", controllerToken, '/tmp/tempImage:latest.tar')
             } catch(err) {
                 println("the error message" + err);
             }    
