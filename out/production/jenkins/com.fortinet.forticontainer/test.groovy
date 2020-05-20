@@ -91,7 +91,12 @@ timestamps{
                 println("the file not found");
             }
             def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
-            def result = uploadFile.upload(imageFile);      
+            print("The uploadFile init success with boundary ${uploadFile.boundary}");
+            try {
+                def result = uploadFile.upload(imageFile); 
+            } catch(err) {
+                println("the error message" + err);
+            }    
 
 
 
