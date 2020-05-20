@@ -8,7 +8,7 @@ def Boolean saveDockerimage(String imageName) {
     def sout = new StringBuilder(), serr = new StringBuilder();
     def tempTarFile = "abcImage:latest";
     // def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
-    def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
+    def save="docker save docker/whalesay -o /tmp/${tempTarFile}.tar ".execute();
     save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
     println("sout : ${sout}, serr : ${serr}")
