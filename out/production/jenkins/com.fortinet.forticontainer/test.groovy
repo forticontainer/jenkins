@@ -89,8 +89,8 @@ def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, 
                     --header 'Content-Type: multipart/form-data' \
                     --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
                     --form 'file=@/tmp/tempImage:latest.tar'".execute()
-    save.consumeProcessOutput(sout, serr);
-    save.waitForOrKill(1000);
+    response.consumeProcessOutput(sout, serr);
+    response.waitForOrKill(1000);
     println("sout : ${sout}, serr : ${serr}")
 
 }
