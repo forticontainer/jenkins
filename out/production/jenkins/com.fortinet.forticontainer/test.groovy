@@ -85,7 +85,7 @@ timestamps{
             println("the job id is ${jobId}");
            
             println("save 2.1 save docker image ${jobId}");
-            uploadImageTesting(jobId, imageName)
+            jenkins.uploadImage(jobId, imageName)
             // for(String image:jenkins.images){
             //     print("uploading the image name: ${image} to jobId : ${jobId}")
             //     def tempTarFile = "tempTarFile:latest"

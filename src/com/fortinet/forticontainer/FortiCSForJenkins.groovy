@@ -55,26 +55,28 @@ class FortiCSForJenkins {
         }
         return "";
     }
-    
-    def Boolean uploadImage(String jobId,String imageName) {
-        def sout = new StringBuilder(), serr = new StringBuilder()
-        def tempTarFile = "tempImage:latest"
-        // def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
-        def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
+    def Boolean saveDockerimage(String imageName) {
+        def sout = new StringBuilder(), serr = new StringBuilder();
+        def tempTarFile = "tempImage:latest";
+        // def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
+        def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
         save.consumeProcessOutput(sout, serr);
         save.waitForOrKill(1000);
         println("sout : ${sout}, serr : ${serr}")
-        // save.waitFor();
+           // save.waitFor();
         // println save.text;
-
-        def imageFile = new File("/tmp/${tempTarFile}.tar");
+    }
+    
+    def Boolean uploadImage(String jobId,String imageName) {
+        def imageTar = 'tempImage:latest'
+        def imageFile = new File("/tmp/${imageTar}.tar");
         if(!imageFile.exists()){
             return false;
         }
 
-        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,tempTarFile);
+        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,imageTar);
         def result = uploadFile.upload(imageFile);
-        def remove = "rm -rf /tmp/tempTarFile:latest.tar".execute()
+        def remove = "rm -rf /tmp/${imageTar}".execute()
         remove.waitFor();
         return result;
     }
