@@ -62,9 +62,10 @@ class HttpUploadFile {
 
         FileInputStream inputStream = new FileInputStream(uploadFile);
         byte[] buffer = new byte[4096];
-        int bytesRead = -1;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
+        int bytesRead = inputStream.read(buffer);
+        while (bytesRead != -1) {
             outputStream.write(buffer, 0, bytesRead);
+            bytesRead = inputStream.read(buffer);
         }
         outputStream.flush();
         inputStream.close();
