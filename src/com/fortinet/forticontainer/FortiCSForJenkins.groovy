@@ -56,6 +56,7 @@ class FortiCSForJenkins {
 
     def Boolean uploadImage(String jobId,String imageName) {
         def filename = URLEncoder.encode(imageName,"UTF-8");
+        println("encode name: ${filename}")
         def save="docker save ${imageName} -o /tmp/${filename}.tar ".execute();
         save.waitFor();
         println save.text;
