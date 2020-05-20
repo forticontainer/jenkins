@@ -34,66 +34,66 @@ def Boolean uploadImageTesting(String jobId,String imageName) {
     // return result;
 }
 
-public void sendPOSTRequest(String url, String controllerToken, String attachmentFilePath)
-    {
-        String charset = "UTF-8";
-        File binaryFile = new File(attachmentFilePath);
-        String boundary = "------------------------" + Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
-        String CRLF = "\r\n"; // Line separator required by multipart/form-data.
-        int    responseCode = 0;
+// public void sendPOSTRequest(String url, String controllerToken, String attachmentFilePath)
+//     {
+//         String charset = "UTF-8";
+//         File binaryFile = new File(attachmentFilePath);
+//         String boundary = "------------------------" + Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+//         String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+//         int    responseCode = 0;
 
-        try 
-        {
-            //Set POST general headers along with the boundary string (the seperator string of each part)
-            URLConnection connection = new URL(url).openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            connection.addRequestProperty("User-Agent", "CheckpaySrv/1.0.0");        
-            connection.setRequestProperty("x-controller-token", "${controllerToken}")
+//         try 
+//         {
+//             //Set POST general headers along with the boundary string (the seperator string of each part)
+//             URLConnection connection = new URL(url).openConnection();
+//             connection.setDoOutput(true);
+//             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+//             connection.addRequestProperty("User-Agent", "CheckpaySrv/1.0.0");        
+//             connection.setRequestProperty("x-controller-token", "${controllerToken}")
             
 
-            OutputStream output = connection.getOutputStream();
-            PrintWriter writer  = new PrintWriter(new OutputStreamWriter(output, charset), true);
+//             OutputStream output = connection.getOutputStream();
+//             PrintWriter writer  = new PrintWriter(new OutputStreamWriter(output, charset), true);
 
-            // Send binary file - part
-            // Part header
-            writer.append("--" + boundary).append(CRLF);
-            writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
-            writer.append("Content-Type: application/octet-stream").append(CRLF);// + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
-            writer.append(CRLF).flush();
+//             // Send binary file - part
+//             // Part header
+//             writer.append("--" + boundary).append(CRLF);
+//             writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+//             writer.append("Content-Type: application/octet-stream").append(CRLF);// + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
+//             writer.append(CRLF).flush();
 
-            // File data
-            Files.copy(binaryFile.toPath(), output);
-            output.flush(); 
+//             // File data
+//             Files.copy(binaryFile.toPath(), output);
+//             output.flush(); 
 
-            // End of multipart/form-data.
-            writer.append(CRLF).append("--" + boundary + "--").flush();
+//             // End of multipart/form-data.
+//             writer.append(CRLF).append("--" + boundary + "--").flush();
 
-            responseCode = ((HttpURLConnection) connection).getResponseCode();
+//             responseCode = ((HttpURLConnection) connection).getResponseCode();
 
 
-            if(responseCode !=200) //We operate only on HTTP code 200
-                return;
+//             if(responseCode !=200) //We operate only on HTTP code 200
+//                 return;
 
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+//         }
+//         catch(Exception e)
+//         {
+//             e.printStackTrace();
+//         }
 
-    }
-    def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
+//     }
+def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
 
-        def sout = new StringBuilder(), serr = new StringBuilder();
-        def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com/api/v1/jenkins/image/8121017131339780' \
-                        --header 'Content-Type: multipart/form-data' \
-                        --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
-                        --form 'file=@/tmp/tempImage:latest.tar'".execute()
-        save.consumeProcessOutput(sout, serr);
-        save.waitForOrKill(1000);
-        println("sout : ${sout}, serr : ${serr}")
+    def sout = new StringBuilder(), serr = new StringBuilder();
+    def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com//api/v1/jenkins/image/12512464169340932' \
+                    --header 'Content-Type: multipart/form-data' \
+                    --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
+                    --form 'file=@/tmp/tempImage:latest.tar'".execute()
+    save.consumeProcessOutput(sout, serr);
+    save.waitForOrKill(1000);
+    println("sout : ${sout}, serr : ${serr}")
 
-    }
+}
 
 node {
 
@@ -151,11 +151,11 @@ timestamps{
             if(!imageFile.exists()){
                 println("the file not found");
             }
-            def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
-            print("The uploadFile init success with boundary ${uploadFile.boundary}");
+            // def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
+            // print("The uploadFile init success with boundary ${uploadFile.boundary}");
             try {
                 // def result = uploadFile.upload(imageFile);
-                sendPOSTRequest(ctrlHost+"/api/v1/jenkins/image/", controllerToken, '/tmp/tempImage:latest.tar')
+                sendImageToHost("a", "b", "c", "d");
             } catch(err) {
                 println("the error message" + err);
             }    
