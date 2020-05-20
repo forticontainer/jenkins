@@ -149,13 +149,13 @@ class FortiCSForJenkins {
 
     }
 
-    def boolean imageScan(){
+    def boolean imageScan(String jobId){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);
         println( "build number : " + buildNumber);
         int result = 0;
         try {
-            def jobId=addJob();
+            // def jobId=addJob();
             if(jobId==""){
                 println("add job fail");
                 message = "add job fail";
