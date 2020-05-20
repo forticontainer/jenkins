@@ -3,19 +3,6 @@ import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
 import com.fortinet.forticontainer.HttpUploadFile
 
-def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
-
-    def sout = new StringBuilder(), serr = new StringBuilder();
-    // def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com//api/v1/jenkins/image/12512464169340932' \
-    //                 --header 'Content-Type: multipart/form-data' \
-    //                 --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
-    //                 --form 'file=@/tmp/tempImage:latest.tar'".execute()
-    def response = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh".execute();
-    response.consumeProcessOutput(sout, serr);
-    response.waitForOrKill(1000);
-    println("sout : ${sout}, serr : ${serr}")
-
-}
 
 node {
 
@@ -59,15 +46,16 @@ timestamps{
         stage("image scan") {
             echo "new jenkins plugin";
             // def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
-            // def imageName = "docker/whalesay"
+            def imageName = "docker/whalesay"
             // println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
-            // jenkins.images.add(imageName)
-            // println("the image has been add to jenkins ${jenkins.images}")
+            jenkins.images.add(imageName)
+            println("the image has been add to jenkins ${jenkins.images}")
             
-            // def jobId = jenkins.addJob();
-            // println("the job id is ${jobId}");
+            def jobId = jenkins.addJob();
+            println("the job id is ${jobId}");
            
-            // println("save 2.1 save docker image ${jobId}");
+            println("save 2.1 save docker image ${jobId}");
+            def saveDockerImageStatus = jenkins.saveDockerimage(imageName);
             
             // def imageFile = new File("/tmp/tempImage:latest.tar");
             // if(!imageFile.exists()){
@@ -75,12 +63,12 @@ timestamps{
             // }
             // def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,'tempImage:latest.tar');
             // print("The uploadFile init success with boundary ${uploadFile.boundary}");
-            try {
-                // def result = uploadFile.upload(imageFile);
-                sendImageToHost("a", "b", "c", "d");
-            } catch(err) {
-                println("the error message" + err);
-            }    
+            // try {
+            //     // def result = uploadFile.upload(imageFile);
+            //     sendImageToHost("a", "b", "c", "d");
+            // } catch(err) {
+            //     println("the error message" + err);
+            // }    
 
 
 

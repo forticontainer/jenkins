@@ -57,14 +57,12 @@ class FortiCSForJenkins {
     }
     def Boolean saveDockerimage(String imageName) {
         def sout = new StringBuilder(), serr = new StringBuilder();
-        def tempTarFile = "tempImage:latest";
+        def tempTarFile = "abcImage:latest";
         // def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
         def save="docker save ${imageName} -o /tmp/${tempTarFile}.tar ".execute();
         save.consumeProcessOutput(sout, serr);
         save.waitForOrKill(1000);
         println("sout : ${sout}, serr : ${serr}")
-           // save.waitFor();
-        // println save.text;
     }
     
     def Boolean uploadImage(String jobId,String imageName) {
@@ -132,18 +130,21 @@ class FortiCSForJenkins {
         }
         return result;
     }
+
     def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
 
         def sout = new StringBuilder(), serr = new StringBuilder();
-        def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com/api/v1/jenkins/image/8121017131339780' \
-                        --header 'Content-Type: multipart/form-data' \
-                        --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
-                        --form 'file=@/tmp/tempImage:latest.tar'".execute()
-        save.consumeProcessOutput(sout, serr);
-        save.waitForOrKill(1000);
+        // def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com//api/v1/jenkins/image/12512464169340932' \
+        //                 --header 'Content-Type: multipart/form-data' \
+        //                 --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
+        //                 --form 'file=@/tmp/tempImage:latest.tar'".execute()
+        def response = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh".execute();
+        response.consumeProcessOutput(sout, serr);
+        response.waitForOrKill(1000);
         println("sout : ${sout}, serr : ${serr}")
 
     }
+
     def boolean imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);
