@@ -55,16 +55,17 @@ class FortiCSForJenkins {
     }
 
     def Boolean uploadImage(String jobId,String imageName) {
-        def save="docker save ${imageName} -o /tmp/${imageName}.tar ".execute();
+        def filename = URLEncoder.encode(imageName,"UTF-8");
+        def save="docker save ${imageName} -o /tmp/${filename}.tar ".execute();
         save.waitFor();
         println save.text;
 
-        def imageFile = new File("/tmp/${imageName}.tar");
+        def imageFile = new File("/tmp/${filename}.tar");
         if(!imageFile.exists()){
-            println("imagefile is no exist ${imageName}");
+            println("imagefile is no exist /tmp/${filename}.tar");
             return false;
         }
-        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,imageName);
+        def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,filename);
         def result = uploadFile.upload(imageFile);
         def remove = "rm -rf /tmp/${imageName}.tar".execute()
         remove.waitFor();
@@ -136,7 +137,7 @@ class FortiCSForJenkins {
                 return false; //todo add job fail
             }
 
-            println( "2.1 save docker image "+jobId);
+            println( "2.1 save docker image ${jobId}");
             for(String imageName:images){
                 imageResult.put(imageName,uploadImage(jobId,imageName));
             }
