@@ -132,6 +132,18 @@ class FortiCSForJenkins {
         }
         return result;
     }
+    def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
+
+        def sout = new StringBuilder(), serr = new StringBuilder();
+        def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com/api/v1/jenkins/image/8121017131339780' \
+                        --header 'Content-Type: multipart/form-data' \
+                        --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
+                        --form 'file=@/tmp/tempImage:latest.tar'".execute()
+        save.consumeProcessOutput(sout, serr);
+        save.waitForOrKill(1000);
+        println("sout : ${sout}, serr : ${serr}")
+
+    }
     def boolean imageScan(){
         println( "jenkins hot : " + jenkinsHost);
         println( "project name : " + projectName);

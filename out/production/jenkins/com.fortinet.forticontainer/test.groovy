@@ -75,28 +75,23 @@ public void sendPOSTRequest(String url, String controllerToken, String attachmen
             if(responseCode !=200) //We operate only on HTTP code 200
                 return;
 
-            // InputStream Instream = ((HttpURLConnection) connection).getInputStream();
-
-            // // Write PDF file 
-            // BufferedInputStream BISin = new BufferedInputStream(Instream);
-            // FileOutputStream FOSfile  = new FileOutputStream(outputFilePathName);
-            // BufferedOutputStream out  = new BufferedOutputStream(FOSfile);
-
-            // int i;
-            // while ((i = BISin.read()) != -1) {
-            //     out.write(i);
-            // }
-
-            // // Cleanup
-            // out.flush();
-            // out.close();
-
-
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
+
+    }
+    def void sendImageToHost(String ctrlHost, String jobId, String controllerToken, String filePath) {
+
+        def sout = new StringBuilder(), serr = new StringBuilder();
+        def response = "curl --location --request POST 'http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com/api/v1/jenkins/image/8121017131339780' \
+                        --header 'Content-Type: multipart/form-data' \
+                        --header 'x-controller-token: 52677600474AFBAB4BD30EEE9D7B6D28' \
+                        --form 'file=@/tmp/tempImage:latest.tar'".execute()
+        save.consumeProcessOutput(sout, serr);
+        save.waitForOrKill(1000);
+        println("sout : ${sout}, serr : ${serr}")
 
     }
 
