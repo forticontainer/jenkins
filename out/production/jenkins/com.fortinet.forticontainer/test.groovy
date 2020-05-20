@@ -47,7 +47,7 @@ timestamps{
             echo "new jenkins plugin";
             // def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
             def imageName = "docker/whalesay"
-            // println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
+            println("The init jenkins Successful with ctrlHost : ${jenkins.ctrlHost}, projectName ： ${projectName}")
             jenkins.images.add(imageName)
             println("the image has been add to jenkins ${jenkins.images}")
             
@@ -55,8 +55,14 @@ timestamps{
             println("the job id is ${jobId}");
            
             println("save 2.1 save docker image ${jobId}");
-            def saveDockerImageStatus = jenkins.saveDockerimage(imageName);
+            try {
+                def response = jenkins.saveDockerimage(imageName);
+                print("response : ${response}");
+            } catch(err){
+                println("the error message is " + err)
+            }
             
+
             // def imageFile = new File("/tmp/tempImage:latest.tar");
             // if(!imageFile.exists()){
             //     println("the file not found");
