@@ -5,6 +5,7 @@ import com.fortinet.forticontainer.HttpUploadFile
 
 @NonCPS
 def Boolean uploadImageTesting(String jobId,String imageName) {
+    def tempTarFile = "curlTest:latest"
     def save = "/var/lib/jenkins/workspace/Test@libs/forticasb-shared-library/src/com/fortinet/forticontainer/saveImage.sh ${imageName} ${tempTarFile}".execute();
     save.consumeProcessOutput(sout, serr);
     save.waitForOrKill(1000);
