@@ -68,7 +68,7 @@ class FortiCSForJenkins {
         }
         def uploadFile = new HttpUploadFile(ctrlHost+"/api/v1/jenkins/image/"+jobId,controllerToken,filename);
         def result = uploadFile.upload(imageFile);
-        def remove = "rm -rf /tmp/${imageName}.tar".execute()
+        def remove = "rm -rf /tmp/${filename}.tar".execute()
         remove.waitFor();
         return result;
     }
