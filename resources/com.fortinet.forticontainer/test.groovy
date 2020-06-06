@@ -1,16 +1,17 @@
 @Library('forticasb-shared-library') _
 import groovy.json.JsonBuilder
 import com.fortinet.forticontainer.FortiCSForJenkins
+import com.fortinet.forticontainer.HttpUploadFile
 
 node {
 
-    ctrlHost = "http://172.30.154.23:10023";
+    // ctrlHost = "http://172.30.154.23:10023";
+    ctrlHost = "http://internal-fortics-controller-next-1063450219.us-east-1.elb.amazonaws.com";
     jenkinsHost = "${env.JOB_URL}";
     projectName = "${env.JOB_NAME}";
     buildNumber = "${env.BUILD_NUMBER}";
     // def userName = "${env.BUILD_USER_ID}";
     controllerToken = "52677600474AFBAB4BD30EEE9D7B6D28"
-
 
     def currentJobResult = "${currentBuild.currentResult}"
     echo "jenkins hot : " + jenkinsHost
@@ -42,11 +43,12 @@ node {
 
             stage("image scan") {
                 echo "new jenkins plugin";
-                def imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
+                imageName = "482025328369.dkr.ecr.us-east-1.amazonaws.com/fortics-controller:next-3";
+//                imageName = 'docker/whalesay:latest'
+                jenkins.images.add(imageName);
 
-                jenkins.images.add(imageName)
-                echo("uploading image with name is ${imageName}, job id is ${jobIdTest}")
                 def result = jenkins.imageScan();
+
                 println("the image scan result is ${result}");
                 println("fail message : "+jenkins.message);
                 println(jenkins.imageResult);

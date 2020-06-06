@@ -125,7 +125,7 @@ class HttpUploadFile {
 
 
     public static void main(String[] args) {
-//        String requestURL = "http://172.30.154.23:10023/api/v1/jenkins/image/9908022949449732";
+//        String requestURL = "http://172.30.154.23:10030/api/v1/jenkins/image/9908022949449732";
         String requestURL = "http://127.0.0.1:8000/api/v1/jenkins/image/9959610875383812";
 
         try {
