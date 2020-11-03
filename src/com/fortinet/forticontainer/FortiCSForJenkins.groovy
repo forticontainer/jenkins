@@ -14,6 +14,10 @@ import com.fortinet.forticontainer.HttpUploadFile
  */
 
 class FortiCSForJenkins {
+    // web host and cred token to get 
+    def String webHost;
+    def String credentialToken;
+
     def String ctrlHost;
     def String controllerToken;
     def List<String> images=new ArrayList<>();
@@ -22,11 +26,59 @@ class FortiCSForJenkins {
     def String buildNumber;
 
     def Map<String,String> imageResult=new HashMap<>();
-    def String message="no message";
+    def String message;
 
-    FortiCSForJenkins(){
-        println("testtest");
+    FortiCSForJenkins() {
+        println("FortiCSForJenkins ctor");
+    }
 
+    def private String getAccessToken(String webHost, String credentialToken) {
+        def uri = "/api/v1/auth/token"
+        def request = new URL("${this.webHost}${uri}").openConnection();
+
+        // request properties
+        request.setRequestMethod("POST")
+        request.setDoOutput(true)
+        post.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+        post.setRequestProperty("x-controller-token", "${credentialToken}")
+
+        // request body
+        def body = [
+                     "grant_type": "password",
+                     "username": "${tbd}",
+                     "password": "${tbd}"
+                   ]
+        def builder = new JsonBuilder()
+        builder(body)
+        def actualBody = builder.toString();
+
+        // post to get access token
+        request.getOutputStream.write(body.getBytes("UTF-8"))
+        def returnCode = post.getResponseCode();
+        if (returnCode == 200) {
+            def response = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
+            return response['access_token'];
+        } else {
+            println("failed to get access token, ${returnCode}")
+            
+        }
+        return "";
+    }
+
+    def private String getControllerHost(String webHost, String credentialToken) {
+        def String accessToken = getAccessToken(webHost, credentialToken)
+        if (!accessToken.isEmpty()) {
+            // tbd - build and post API to get controller host
+        }
+        return false
+    }
+
+    def Boolean init(String credentialToken, String webHost) {
+        this.credentialToken = credentialToken
+        this.webHost = webHost
+
+        this.ctrlHost = getControllerHost(credentialToken, webHost)
+        this.controllerToken = credentialToken
     }
 
     def String addJob() {
